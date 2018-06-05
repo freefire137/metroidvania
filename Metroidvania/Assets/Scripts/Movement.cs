@@ -8,6 +8,8 @@ public class Movement : MonoBehaviour {
 	private Vector3 jumpForce;
 	public int moveSpeed = 3;
 	private bool isGrounded;
+	public bool doubleJumpEnabled;
+	private int jumpsLeft;
 
 	// Use this for initialization
 	void Start () {
@@ -16,6 +18,7 @@ public class Movement : MonoBehaviour {
 	void OnCollisionEnter() {
 		isGrounded = true;
 		Debug.Log("grounded");
+		jumpsLeft = MaxJumps();
 	}
 	void OnCollisionStay() {
 		//isGrounded = true;
@@ -30,11 +33,19 @@ public class Movement : MonoBehaviour {
 	void FixedUpdate () {
 		Rigidbody myRigid = this.GetComponent<Rigidbody>();
 		myRigid.velocity = new Vector3(moveSpeed*Input.GetAxis("Horizontal"),myRigid.velocity.y,0f);
-		if (isGrounded && Input.GetKey(KeyCode.Space)) {
+		
+		if (jumpsLeft > 0 && Input.GetKey(KeyCode.Space)) {
 			myRigid.AddForce(new Vector3(0f, jumpSpeed, 0f), ForceMode.Impulse);
-			//isGrounded = false;
+			jumpsLeft--;
+
 		}
 		//Camera.main
 		//Debug.Log()
+	}
+
+	int MaxJumps(){
+		if (doubleJumpEnabled)
+			return 2;
+		return 1;
 	}
 }
